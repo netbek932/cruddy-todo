@@ -2,8 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
+const sprintf = require('sprintf-js').sprintf;
 
 var items = {};
+const zeroPaddedNumber = (num) => {
+  return sprintf('%05d', num);
+};
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
@@ -25,19 +29,32 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
-    return { id, text };
+  fs.readdir(exports.dataDir, function (err, items) {
+    if (err) {
+      throw ('Unable to scan directory: ' + err);
+    }
+    var data = _.map(items, (id) => {
+      id = zeroPaddedNumber(id.slice(0, -4));
+      return { id: id, text: id };
+    });
+
+    callback(null, data);
   });
-  callback(null, data);
 };
 
 exports.readOne = (id, callback) => {
-  var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
+  fs.readdir(exports.dataDir, function (err, items) {
+    //handling error
+    if (err) {
+      throw ('Unable to scan directory: ' + err);
+    }
+    var text = items[id];
+    if (!text) {
+      callback(new Error(`No item with id: ${id}`));
+    } else {
+      callback(null, { id, text });
+    }
+  });
 };
 
 exports.update = (id, text, callback) => {
