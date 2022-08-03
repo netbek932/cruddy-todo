@@ -43,16 +43,19 @@ exports.readAll = (callback) => {
 };
 
 exports.readOne = (id, callback) => {
-  fs.readdir(exports.dataDir, function (err, items) {
+  fs.readFile(path.join(exports.dataDir, id + '.txt'), 'utf8', (err, items) => {
     //handling error
+    console.log(items);
     if (err) {
       throw ('Unable to scan directory: ' + err);
-    }
-    var text = items[id];
-    if (!text) {
-      callback(new Error(`No item with id: ${id}`));
     } else {
+      var text = items[id];
+      console.log(text);
+      // if (!text) {
+      //   callback(new Error(`No item with id: ${id}`));
+      // } else {
       callback(null, { id, text });
+      //}
     }
   });
 };
