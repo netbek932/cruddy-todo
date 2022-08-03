@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const sprintf = require('sprintf-js').sprintf;
 
-var counter = 0;
+var count = 0;
 
 // Private helper functions ////////////////////////////////////////////////////
 
@@ -45,11 +45,11 @@ exports.getNextUniqueId = (callback) => {
     } else {
       // callback(null, counterString);
       count = count + 1;
-      writeCounter(count, (err, callback1) => {
+      writeCounter(count, (err, input) => {
         if (err) {
           throw ('error writing counter in getNextUniqueId');
         } else {
-          callback(null, callback1);
+          callback(null, input);
           //zeroPaddedNumber(counter)
         }
       });
