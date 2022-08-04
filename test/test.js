@@ -159,15 +159,15 @@ describe('todos', () => {
     });
 
     it('should not change the counter', (done) => {
-      todos.update('00002', 'updated todo', (err, todo) => {
+      todos.update('00001', 'updated todo', (err, todo) => {
         const counterFileContents = fs.readFileSync(counter.counterFile).toString();
-        expect(counterFileContents).to.equal('00002');
+        expect(counterFileContents).to.equal('00001');
         done();
       });
     });
 
     it('should update the todo text for existing todo', (done) => {
-      const todoId = '00002';
+      const todoId = '00001';
       const updatedTodoText = 'updated todo';
       todos.update(todoId, updatedTodoText, (err, todo) => {
         const todoFileContents = fs.readFileSync(path.join(todos.dataDir, `${todoId}.txt`)).toString();
