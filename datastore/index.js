@@ -21,8 +21,6 @@ exports.create = (text, callback) => {
         if (err) {
           throw err;
         } else {
-          items['id'] = id;
-          items['text'] = text;
           callback(null, { id, text });
         }
       });
@@ -55,14 +53,17 @@ exports.readOne = (id, callback) => {
 };
 
 exports.update = (id, text, callback) => {
-  fs.writeFile(path.join(exports.dataDir, id + '.txt'), text, (err) => {
-    var item = items[id];
-    console.log('items', items);
-    if (!item || err) {
+  fs.readFile(path.join(exports.dataDir, id + '.txt'), 'utf8', (err) => {
+    if (err) {
       callback(new Error(`No item with id: ${id}`));
     } else {
-      items[id] = text;
-      callback(null, { id, text });
+      fs.writeFile(path.join(exports.dataDir, id + '.txt'), text, (err) => {
+        if (err) {
+          callback(new Error(`Could not update item with id: ${id}`));
+        } else {
+          callback(null, { id, text });
+        }
+      });
     }
   });
 };
