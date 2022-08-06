@@ -3,6 +3,8 @@ const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
 const sprintf = require('sprintf-js').sprintf;
+var Promise = require('bluebird');
+const readFileAsync = Promise.promisify(fs.readFile);
 
 var items = {};
 const zeroPaddedNumber = (num) => {
@@ -32,13 +34,19 @@ exports.readAll = (callback) => {
   fs.readdir(exports.dataDir, function (err, items) {
     if (err) {
       throw ('Unable to scan directory: ' + err);
+    } else {
+      var data = _.map(items, (id) => {
+        id = zeroPaddedNumber(id.slice(0, -4));
+        return readFileAsync(path.join(exports.dataDir, id + '.txt'))
+          .then((text) => {
+            return { id: id, text: text.toString() };
+          });
+      });
+      Promise.all(data)
+        .then((data) => {
+          callback(null, data);
+        });
     }
-    var data = _.map(items, (id) => {
-      id = zeroPaddedNumber(id.slice(0, -4));
-      return { id: id, text: id };
-    });
-
-    callback(null, data);
   });
 };
 
